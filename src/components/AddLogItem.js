@@ -5,16 +5,52 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 
-const AddLogItem = () => {
+const AddLogItem = ({
+	addItem,
+	displayAlert,
+	showChecked,
+	showAll,
+	filter,
+}) => {
 	const [todo, setTodo] = useState('');
 	const [user, setUser] = useState('');
-	const [priority, setPriority] = useState('low');
+	const [date, setDate] = useState(Date.now());
+	const [priority, setPriority] = useState('');
+
+	const handleSubmit = (e) => {
+		e.preventDefault();
+
+		// Check inputs if empty
+		if (checkInputs()) {
+			addItem({
+				todo: todo.trim(),
+				user: user.trim(),
+				priority,
+				date,
+				done: false,
+			});
+
+			clearState();
+		} else {
+			displayAlert('Missing credientals...', 'warning');
+		}
+	};
+
+	const checkInputs = () => {
+		return todo.trim() && user.trim() && priority ? true : false;
+	};
+
+	const clearState = () => {
+		setTodo('');
+		setUser('');
+		setPriority('low');
+	};
 
 	return (
-		<Card className='mt-4 mb-3'>
+		<Card className='mt-1 mb-3'>
 			<Card.Body>
-				<Form>
-					<Row className='my-3'>
+				<Form onSubmit={handleSubmit}>
+					<Row>
 						<Col>
 							<Form.Control
 								placeholder='Log'
@@ -24,7 +60,7 @@ const AddLogItem = () => {
 						</Col>
 					</Row>
 
-					<Row className='my-3'>
+					<Row className='mt-2'>
 						<Col>
 							<Form.Control
 								placeholder='User'
@@ -38,15 +74,40 @@ const AddLogItem = () => {
 								value={priority}
 								onChange={(e) => setPriority(e.target.value)}
 							>
-								<option value='0'>Select Priority</option>
-								<option value='1'>Low</option>
-								<option value='2'>Moderate</option>
-								<option value='3'>High</option>
+								<option value='null'>Select Priority</option>
+								<option value='low'>Low</option>
+								<option value='moderate'>Moderate</option>
+								<option value='high'>High</option>
 							</Form.Control>
 						</Col>
 						<Col>
-							<Button type='submit' variant='primary' block>
-								Save
+							<Form.Control
+								placeholder='Date LATER'
+								type='date'
+								value={date}
+								onChange={(e) => setDate(e.target.value)}
+							/>
+						</Col>
+					</Row>
+
+					<Row className='mt-3 d-flex justify-content-between'>
+						<Col xs={2}>
+							<Button
+								onClick={() => showChecked()}
+								variant={filter.checked ? 'success' : 'info'}
+								block
+							>
+								{filter.checked ? 'Done ✔' : 'Undone ✖'}
+							</Button>
+						</Col>
+						<Col xs={2} className='mr-auto'>
+							<Button onClick={() => showAll()} variant='secondary' block>
+								Show All
+							</Button>
+						</Col>
+						<Col xs={3}>
+							<Button type='submit' variant='secondary' block>
+								SAVE LOG
 							</Button>
 						</Col>
 					</Row>

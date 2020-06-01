@@ -3,7 +3,7 @@ import Moment from 'react-moment';
 import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
 
-const LogItem = ({ log }) => {
+const LogItem = ({ log, removeItem, doneItem }) => {
 	const setPriority = () => {
 		switch (log.priority) {
 			case 'low':
@@ -25,11 +25,18 @@ const LogItem = ({ log }) => {
 			<td>{log.todo}</td>
 			<td>{log.user}</td>
 			<td>{formatDate(log.createdAt)}</td>
-			<td className='d-inline-flex justify-content-around'>
-				<Button className='mr-2' variant='outline-success'>
+			<td className='d-flex justify-content-center'>
+				<Button
+					disabled={log.done}
+					onClick={() => doneItem(log.id)}
+					className='mr-2'
+					variant={log.done ? 'success' : 'outline-success'}
+				>
 					✔
 				</Button>
-				<Button variant='danger'>✖</Button>
+				<Button onClick={() => removeItem(log.id)} variant='outline-danger'>
+					✖
+				</Button>
 			</td>
 		</tr>
 	);
