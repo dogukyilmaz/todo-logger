@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Container from 'react-bootstrap/Container';
-import Table from 'react-bootstrap/Table';
-import Alert from 'react-bootstrap/Alert';
 
-import LogItem from './LogItem';
 import AddLogItem from './AddLogItem';
+import Header from './Header';
+import AlertPopup from './AlertPopup';
+import LogContent from './LogContent';
 
 const LOGS = [
 	{
@@ -49,6 +49,9 @@ const LOGS = [
 	},
 ];
 
+// LATER:
+// FIX: add or remove in the undone & done lists
+
 const App = () => {
 	const [logs, setLogs] = useState([...LOGS]);
 	const [filteredLogs, setFilteredLogs] = useState([]);
@@ -62,17 +65,12 @@ const App = () => {
 		variant: '',
 	});
 
-	useEffect(() => {}, [logs, filteredLogs]);
-
 	const handleCheckButton = () => {
 		if (filter.showAll) {
 			setFilter({ ...filter, showAll: false });
-
-			const filteredLogs = logs.filter((log) => log.done == filter.checked);
-			setFilteredLogs(filteredLogs);
+			setFilteredLogs(logs.filter((log) => log.done === filter.checked));
 		} else {
-			const filteredLogs = logs.filter((log) => log.done == !filter.checked);
-			setFilteredLogs(filteredLogs);
+			setFilteredLogs(logs.filter((log) => log.done === !filter.checked));
 			setFilter({
 				...filter,
 				checked: !filter.checked,
@@ -91,8 +89,9 @@ const App = () => {
 		// Comes from DB
 		item.id = Math.random().toString().slice(2, 7);
 		item.createdAt = new Date();
-		console.log(item);
+
 		setLogs([item, ...logs]);
+		setFilteredLogs(logs.filter((log) => log.done === filter.checked));
 		displayAlert('Log added successfully!', 'success');
 	};
 
@@ -109,7 +108,9 @@ const App = () => {
 			}
 			return log;
 		});
-		setLogs([...newLogs]);
+		setLogs(newLogs);
+		const filteredLogs = logs.filter((log) => log.done === filter.checked);
+		setFilteredLogs(filteredLogs);
 		displayAlert('Log checked done!', 'info');
 	};
 
@@ -137,42 +138,18 @@ const App = () => {
 				showAll={handleShowAllButton}
 				filter={filter}
 			/>
-			{alert.show && (
-				<Alert
-					className='fixed-top w-25 ml-auto text-center'
-					style={{ top: 12, right: 30 }}
-					variant={alert.variant}
-				>
-					{alert.message}
-				</Alert>
-			)}
-			<Table>
-				<thead>
-					<tr>
-						<th>Priority</th>
-						<th>Log Todo</th>
-						<th>User</th>
-						<th>Created</th>
-						<th className='text-center'>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{logs.length > 0 ? (
-						(filter.showAll ? logs : filteredLogs).map((log) => (
-							<LogItem
-								removeItem={handleDeleteItem}
-								doneItem={handleDoneItem}
-								key={log.id}
-								log={log}
-							/>
-						))
-					) : (
-						<tr className='text-center'>
-							<td colSpan={5}>No items.</td>
-						</tr>
-					)}
-				</tbody>
-			</Table>
+
+			<AlertPopup alert={alert} />
+
+			<Header filter={filter} />
+
+			<LogContent
+				filter={filter}
+				logs={logs}
+				filteredLogs={filteredLogs}
+				handleDeleteItem={handleDeleteItem}
+				handleDoneItem={handleDoneItem}
+			/>
 		</Container>
 	);
 };
