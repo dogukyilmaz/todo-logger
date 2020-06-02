@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Container from 'react-bootstrap/Container';
+
+import { ipcRenderer } from 'electron';
 
 import AddLogItem from './AddLogItem';
 import Header from './Header';
@@ -53,7 +55,7 @@ const LOGS = [
 // FIX: add or remove in the undone & done lists
 
 const App = () => {
-	const [logs, setLogs] = useState([...LOGS]);
+	const [logs, setLogs] = useState([]);
 	const [filteredLogs, setFilteredLogs] = useState([]);
 	const [filter, setFilter] = useState({
 		showAll: true,
@@ -64,6 +66,22 @@ const App = () => {
 		message: '',
 		variant: '',
 	});
+
+	useEffect(() => {
+		ipcRenderer.send('logs:load');
+
+		ipcRenderer.on('logs:get', (e, logs) => {
+			setLogs(JSON.parse(logs));
+		});
+	}, []);
+
+	useEffect(() => {
+		if (filter.checked) {
+			setFilteredLogs(logs.filter((log) => log.done === filter.checked));
+		} else {
+			setFilteredLogs(logs.filter((log) => log.done === false));
+		}
+	}, [logs]);
 
 	const handleCheckButton = () => {
 		if (filter.showAll) {
@@ -87,23 +105,26 @@ const App = () => {
 
 	const handleAddItem = (item) => {
 		// Comes from DB
-		item.id = Math.random().toString().slice(2, 7);
-		item.createdAt = new Date();
 
-		setLogs([item, ...logs]);
-		setFilteredLogs(logs.filter((log) => log.done === filter.checked));
+		item.createdAt = new Date();
+		// setLogs([item, ...logs]);
+		// setFilteredLogs(logs.filter((log) => log.done === filter.checked));
+
+		ipcRenderer.send('logs:add', item);
+
 		displayAlert('Log added successfully!', 'success');
 	};
 
 	const handleDeleteItem = (id) => {
-		const removedLogs = logs.filter((log) => log.id !== id);
-		setLogs([...removedLogs]);
+		// setLogs(logs.filter((log) => log._id !== id));
+		ipcRenderer.send('logs:delete', id);
+
 		displayAlert('Log removed successfully!', 'danger');
 	};
 
 	const handleDoneItem = (id) => {
 		const newLogs = logs.map((log) => {
-			if (log.id === id) {
+			if (log._id === id) {
 				log.done = true;
 			}
 			return log;
