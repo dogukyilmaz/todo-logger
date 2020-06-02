@@ -1,6 +1,6 @@
 const path = require('path');
 const url = require('url');
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 
 const LogModel = require('./models/Log');
 const connectDB = require('./config/db');
@@ -11,6 +11,7 @@ connectDB();
 let mainWindow;
 
 let isDev = false;
+const isMac = process.platform === 'darwin' ? true : false;
 
 if (
 	process.env.NODE_ENV !== undefined &&
@@ -74,20 +75,44 @@ function createMainWindow() {
 	mainWindow.on('closed', () => (mainWindow = null));
 }
 
-app.on('ready', createMainWindow);
+app.on('ready', () => {
+	createMainWindow();
+
+	// Menu set
+	const mainMenu = Menu.buildFromTemplate(menu);
+	Menu.setApplicationMenu(mainMenu);
+});
+
+const menu = [
+	...(isMac ? [{ role: 'appMenu' }] : []),
+	{ role: 'fileMenu' },
+	{ role: 'editMenu' },
+	{
+		label: 'Logs',
+		submenu: [
+			{
+				label: 'Clear Logs',
+				click: () => clearLogs(),
+			},
+		],
+	},
+	...(isDev
+		? [
+				{
+					label: 'Development',
+					submenu: [
+						{ role: 'reload' },
+						{ role: 'forcereload' },
+						{ type: 'separator' },
+						{ role: 'toggledevtools' },
+					],
+				},
+		  ]
+		: []),
+];
 
 // Logs loaded
 ipcMain.on('logs:load', sendLogs);
-
-// Get logs from db then send ipcRenderer
-async function sendLogs() {
-	try {
-		const logs = await LogModel.find().sort({ createdAt: -1 });
-		mainWindow.webContents.send('logs:get', JSON.stringify(logs));
-	} catch (error) {
-		console.log(error);
-	}
-}
 
 // Create Log
 ipcMain.on('logs:add', async (e, item) => {
@@ -108,6 +133,42 @@ ipcMain.on('logs:delete', async (e, id) => {
 		console.log(error);
 	}
 });
+
+// Update/Check Log
+ipcMain.on('logs:check', async (e, id) => {
+	try {
+		const log = await LogModel.findOneAndUpdate({ _id: id }, { done: true });
+		sendLogs();
+		mainWindow.webContents.send('logs:updated:todo', log.todo);
+	} catch (error) {
+		console.log(errot);
+	}
+});
+
+// Clear all logs on IPCMAIN APPLY
+ipcMain.on('logs:deleteAll:applied', async (e) => {
+	try {
+		await LogModel.deleteMany({});
+		mainWindow.webContents.send('logs:clear');
+	} catch (error) {
+		console.log(error);
+	}
+});
+
+// Get logs from db then send ipcRenderer
+async function sendLogs() {
+	try {
+		const logs = await LogModel.find().sort({ createdAt: -1 });
+		mainWindow.webContents.send('logs:get', JSON.stringify(logs));
+	} catch (error) {
+		console.log(error);
+	}
+}
+
+// Clear all logs from menu
+async function clearLogs() {
+	mainWindow.webContents.send('logs:deleteAll:apply');
+}
 
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {

@@ -30,6 +30,22 @@ const App = () => {
 		ipcRenderer.on('logs:get', (e, logs) => {
 			setLogs(JSON.parse(logs));
 		});
+
+		ipcRenderer.on('logs:updated:todo', (e, todo) => {
+			displayAlert(`${todo} is checked!`, 'info', 3000);
+		});
+
+		ipcRenderer.on('logs:deleteAll:apply', () => {
+			// displayAlert('All logs removed!', 'danger', 5000, true);
+			const isApplied = confirm(
+				'DO YOU WANT TO REMOVE ALL LOGS?\nARE YOU SURE!'
+			);
+			if (isApplied) {
+				ipcRenderer.send('logs:deleteAll:applied');
+				setLogs([]);
+				displayAlert('All logs removed!', 'danger', 5000);
+			}
+		});
 	}, []);
 
 	useEffect(() => {
@@ -80,16 +96,22 @@ const App = () => {
 	};
 
 	const handleDoneItem = (id) => {
-		const newLogs = logs.map((log) => {
-			if (log._id === id) {
-				log.done = true;
-			}
-			return log;
-		});
-		setLogs(newLogs);
+		// If want to do on ui instead another db get request and send
+		// Uncomment and remove sendLogs() from ipc.check event
+
+		// const newLogs = logs.map((log) => {
+		// 	if (log._id === id) {
+		// 		log.done = true;
+		// 	}
+		// 	return log;
+		// });
+		// setLogs(newLogs);
+
+		ipcRenderer.send('logs:check', id);
+
 		const filteredLogs = logs.filter((log) => log.done === filter.checked);
 		setFilteredLogs(filteredLogs);
-		displayAlert('Log checked done!', 'info');
+		// displayAlert('Log checked done!', 'info');
 	};
 
 	const displayAlert = (msg, variant = 'success', secs = 3000) => {
