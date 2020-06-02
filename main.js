@@ -2,6 +2,12 @@ const path = require('path');
 const url = require('url');
 const { app, BrowserWindow } = require('electron');
 
+const LogModel = require('./models/Log');
+const connectDB = require('./config/db');
+
+// Connect to DB
+connectDB();
+
 let mainWindow;
 
 let isDev = false;
@@ -15,13 +21,17 @@ if (
 
 function createMainWindow() {
 	mainWindow = new BrowserWindow({
+		title: 'TodoLogger',
 		width: isDev ? 1400 : 1100,
 		height: 800,
 		show: false,
-		icon: './assets/icons/icon.png',
+		backgroundColor: '#2e2c29',
+		icon: `${__dirname}/assets/icon.png`,
 		webPreferences: {
 			nodeIntegration: true,
+			// affinity: 'window',
 		},
+		opacity: 0.88,
 	});
 
 	let indexPath;
@@ -49,14 +59,14 @@ function createMainWindow() {
 
 		// Open devtools if dev
 		if (isDev) {
-			const {
-				default: installExtension,
-				REACT_DEVELOPER_TOOLS,
-			} = require('electron-devtools-installer');
+			// const {
+			// 	default: installExtension,
+			// 	REACT_DEVELOPER_TOOLS,
+			// } = require('electron-devtools-installer');
 
-			installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
-				console.log('Error loading React DevTools: ', err)
-			);
+			// installExtension(REACT_DEVELOPER_TOOLS).catch((err) =>
+			// 	console.log('Error loading React DevTools: ', err)
+			// );
 			mainWindow.webContents.openDevTools();
 		}
 	});
