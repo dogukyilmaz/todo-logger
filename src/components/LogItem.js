@@ -28,13 +28,13 @@ const LogItem = ({ log, removeItem, doneItem }) => {
 			<td className='d-flex justify-content-center'>
 				<Button
 					disabled={log.done}
-					onClick={() => doneItem(log.id)}
+					onClick={() => doneItem(log._id)}
 					className='mr-2'
 					variant={log.done ? 'success' : 'outline-success'}
 				>
 					✔
 				</Button>
-				<Button onClick={() => removeItem(log.id)} variant='outline-danger'>
+				<Button onClick={() => removeItem(log._id)} variant='outline-danger'>
 					✖
 				</Button>
 			</td>

@@ -14,7 +14,7 @@ const AddLogItem = ({
 }) => {
 	const [todo, setTodo] = useState('');
 	const [user, setUser] = useState('');
-	const [date, setDate] = useState(Date.now());
+	const [date, setDate] = useState('');
 	const [priority, setPriority] = useState('');
 
 	const handleSubmit = (e) => {

@@ -35,7 +35,7 @@ const LogContent = ({
 						<LogItem
 							removeItem={handleDeleteItem}
 							doneItem={handleDoneItem}
-							key={log.id}
+							key={log._id}
 							log={log}
 						/>
 					))

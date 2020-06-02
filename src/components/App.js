@@ -8,49 +8,6 @@ import Header from './Header';
 import AlertPopup from './AlertPopup';
 import LogContent from './LogContent';
 
-const LOGS = [
-	{
-		id: 1,
-		todo: 'Learn React-Native.',
-		priority: 'low',
-		user: 'Dou',
-		createdAt: '06.01.2020 15:15',
-		done: false,
-	},
-	{
-		id: 2,
-		todo: 'Something absurd.',
-		priority: 'moderate',
-		user: 'Kaan',
-		createdAt: '06.01.2020 17:23',
-		done: false,
-	},
-	{
-		id: 3,
-		todo: 'Haters gonna hate.',
-		priority: 'high',
-		user: 'douscriptist',
-		createdAt: new Date().toString(),
-		done: false,
-	},
-	{
-		id: 4,
-		todo: 'Momentjs trying.',
-		priority: 'low',
-		user: 'douscriptist',
-		createdAt: '05.8.2020',
-		done: false,
-	},
-	{
-		id: 5,
-		todo: 'Momentjs trying.',
-		priority: 'high',
-		user: 'douscriptist',
-		createdAt: '01.2.2020',
-		done: false,
-	},
-];
-
 // LATER:
 // FIX: add or remove in the undone & done lists
 
