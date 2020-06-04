@@ -15,6 +15,7 @@ const AddLogItem = ({
 	const [todo, setTodo] = useState('');
 	const [user, setUser] = useState('');
 	const [date, setDate] = useState('');
+	const [deadLine, setDeadLine] = useState('');
 	const [priority, setPriority] = useState('');
 
 	const handleSubmit = (e) => {
@@ -27,6 +28,7 @@ const AddLogItem = ({
 				user: user.trim(),
 				priority,
 				date,
+				deadLine,
 				done: false,
 			});
 
@@ -37,7 +39,7 @@ const AddLogItem = ({
 	};
 
 	const checkInputs = () => {
-		return todo.trim() && user.trim() && priority ? true : false;
+		return todo.trim() && user.trim() && priority && deadLine ? true : false;
 	};
 
 	const clearState = () => {
@@ -82,10 +84,10 @@ const AddLogItem = ({
 						</Col>
 						<Col>
 							<Form.Control
-								placeholder='Date LATER'
+								placeholder='Deadline'
 								type='date'
-								value={date}
-								onChange={(e) => setDate(e.target.value)}
+								value={deadLine}
+								onChange={(e) => setDeadLine(e.target.value)}
 							/>
 						</Col>
 					</Row>

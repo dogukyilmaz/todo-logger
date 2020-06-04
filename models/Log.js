@@ -21,6 +21,10 @@ const LogSchema = new mongoose.Schema({
 		type: Boolean,
 		default: false,
 	},
+	deadLine: {
+		type: Date,
+		required: [true, 'Deadline is required!'],
+	},
 	createdAt: {
 		type: Date,
 		default: Date.now,

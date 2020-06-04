@@ -26,6 +26,7 @@ const LogContent = ({
 					<th>Log Todo</th>
 					<th>User</th>
 					<th>Created</th>
+					<th>Deadline</th>
 					<th className='text-center'>Actions</th>
 				</tr>
 			</thead>
@@ -41,7 +42,7 @@ const LogContent = ({
 					))
 				) : (
 					<tr className='text-center'>
-						<td colSpan={5}>No items.</td>
+						<td colSpan={6}>No items.</td>
 					</tr>
 				)}
 			</tbody>

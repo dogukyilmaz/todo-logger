@@ -18,13 +18,22 @@ const LogItem = ({ log, removeItem, doneItem }) => {
 	};
 
 	return (
-		<tr>
+		<tr className={log.done ? 'bg-light' : ''}>
 			<td>
 				<Badge variant={setPriority()}>{setUpperCase(log.priority)}</Badge>
 			</td>
 			<td>{log.todo}</td>
 			<td>{log.user}</td>
 			<td>{formatDate(log.createdAt)}</td>
+			{log.done ? (
+				<td>
+					{' '}
+					<del>{formatDate(log.deadLine)}</del>
+				</td>
+			) : (
+				<td>{formatDate(log.deadLine)}</td>
+			)}
+
 			<td className='d-flex justify-content-center'>
 				<Button
 					disabled={log.done}

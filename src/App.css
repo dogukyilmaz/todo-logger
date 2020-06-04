@@ -9,3 +9,7 @@
 .form-control:focus {
   /* box-shadow: none; */
 }
+
+.bg-light {
+  background-color: rgb(216, 231, 188) !important;
+}
